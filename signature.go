@@ -3,7 +3,7 @@ Package walletsignature provides functions to generate ECDSA keys, sign messages
 
 This package is designed to be used for Ethereum-based cryptographic operations.
 
-Usage: github.com/nuominmin/wallet-signature/signature_test.go
+Usage: ./signature_test.go
 */
 package walletsignature
 
@@ -47,7 +47,7 @@ func genDomainFields(domain apitypes.TypedDataDomain) []apitypes.Type {
 }
 
 // Generate the types for the primary type based on the messages
-func genPrimaryTypeFields(messages map[string]interface{}) ([]apitypes.Type, error) {
+func genPrimaryTypeFields(messages apitypes.TypedDataMessage) ([]apitypes.Type, error) {
 	primaryTypeFields := make([]apitypes.Type, 0)
 	for key, value := range messages {
 		var fieldType string
@@ -69,7 +69,7 @@ func genPrimaryTypeFields(messages map[string]interface{}) ([]apitypes.Type, err
 }
 
 // SignMessage signs a message using the given private key hex, chain ID, and messages.
-func SignMessage(privateHexKey string, domain apitypes.TypedDataDomain, messages map[string]interface{}) (string, error) {
+func SignMessage(privateHexKey string, domain apitypes.TypedDataDomain, messages apitypes.TypedDataMessage) (string, error) {
 	privateKey, err := crypto.HexToECDSA(privateHexKey)
 	if err != nil {
 		return "", fmt.Errorf("failed to load private key: %v", err)

@@ -8,6 +8,7 @@ Usage: ./signature_test.go
 package walletsignature
 
 import (
+	"crypto/ecdsa"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -23,6 +24,11 @@ var primaryType = "Message"
 // SetPrimaryType sets the primary type for the EIP-712 message
 func SetPrimaryType(newPrimaryType string) {
 	primaryType = newPrimaryType
+}
+
+// HexToECDSA .
+func HexToECDSA(hexKey string) (*ecdsa.PrivateKey, error) {
+	return crypto.HexToECDSA(hexKey)
 }
 
 // Generate the types for EIP712Domain based on the domain struct
@@ -69,14 +75,9 @@ func genPrimaryTypeFields(messages apitypes.TypedDataMessage) ([]apitypes.Type, 
 }
 
 // SignMessage signs a message using the given private key hex, chain ID, and messages.
-func SignMessage(privateHexKey string, domain apitypes.TypedDataDomain, messages apitypes.TypedDataMessage) (string, error) {
-	privateKey, err := crypto.HexToECDSA(privateHexKey)
+func SignMessage(privateKey *ecdsa.PrivateKey, domain apitypes.TypedDataDomain, messages apitypes.TypedDataMessage) (string, error) {
+	primaryTypeFields, err := genPrimaryTypeFields(messages)
 	if err != nil {
-		return "", fmt.Errorf("failed to load private key: %v", err)
-	}
-
-	var primaryTypeFields []apitypes.Type
-	if primaryTypeFields, err = genPrimaryTypeFields(messages); err != nil {
 		return "", err
 	}
 

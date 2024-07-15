@@ -3,6 +3,7 @@ package walletsignature
 import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/common/math"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/signer/core/apitypes"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -35,9 +36,14 @@ func (s *TestSignatureSuite) TestGenKey() {
 
 // 签名
 func (s *TestSignatureSuite) TestSignature() {
-	var err error
+	ecdsaPrivateKey, err := crypto.HexToECDSA(privateKey)
+	if err != nil {
+		s.Error(err)
+		return
+	}
+
 	nonce = time.Now().Unix()
-	sign, err = SignMessage(privateKey,
+	sign, err = SignMessage(ecdsaPrivateKey,
 		apitypes.TypedDataDomain{ChainId: math.NewHexOrDecimal256(chainId)},
 		map[string]interface{}{
 			"nonce": fmt.Sprintf("%d", nonce),
